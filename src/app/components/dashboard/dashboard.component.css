@@ -1,0 +1,42 @@
+.dashboard-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .page-title {
+    margin-bottom: 24px;
+    color: #333;
+  }
+  
+  .dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .dashboard-card {
+    height: 100%;
+  }
+  
+  .stat-value {
+    font-size: 48px;
+    font-weight: 300;
+    text-align: center;
+    margin: 16px 0;
+    color: #3f51b5;
+  }
+  
+  .department-stats {
+    margin-top: 16px;
+  }
+  
+  .recent-people-card {
+    margin-bottom: 24px;
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-cards {
+      grid-template-columns: 1fr;
+    }
+  }

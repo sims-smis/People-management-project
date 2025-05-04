@@ -14,6 +14,7 @@ import { DeleteConfirmationComponent } from '../delete-confirmation/delete-confi
 export class PersonDetailsComponent implements OnInit {
   person: Person;
   isLoading = true;
+  error: string = null;
   
   constructor(
     private route: ActivatedRoute,
@@ -32,18 +33,21 @@ export class PersonDetailsComponent implements OnInit {
 
   loadPersonDetails(id: number) {
     this.isLoading = true;
+    this.error = null;
+    
     this.peopleService.getPerson(id).subscribe(
       person => {
         this.person = person;
         this.isLoading = false;
       },
       error => {
-        this.snackBar.open('Error loading person details', 'Close', {
-          duration: 3000,
+        this.error = 'Failed to load person details. Please try again later.';
+        this.isLoading = false;
+        this.snackBar.open('Error loading person details: ' + error, 'Close', {
+          duration: 5000,
           horizontalPosition: 'end',
           verticalPosition: 'top'
         });
-        this.router.navigate(['/people']);
       }
     );
   }
@@ -57,23 +61,22 @@ export class PersonDetailsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.peopleService.deletePerson(this.person.id).subscribe(
-          success => {
-            if (success) {
-              this.snackBar.open('Person deleted successfully', 'Close', {
-                duration: 3000,
-                horizontalPosition: 'end',
-                verticalPosition: 'top'
-              });
-              this.router.navigate(['/people']);
-            } else {
-              this.snackBar.open('Error deleting person', 'Close', {
-                duration: 3000,
-                horizontalPosition: 'end',
-                verticalPosition: 'top'
-              });
-            }
+          () => {
+            this.snackBar.open('Person deleted successfully', 'Close', {
+              duration: 3000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top'
+            });
+            this.router.navigate(['/people']);
+          },
+          error => {
+            this.snackBar.open('Error deleting person hehe: ' + error, 'Close', {
+              duration: 5000,
+              horizontalPosition: 'end',
+              verticalPosition: 'top'
+            });
           }
-        );
+        );        
       }
     });
   }

@@ -1,0 +1,44 @@
+{
+  "people": [
+    {
+      "firstName": "Johnnn",
+      "lastName": "Doe",
+      "email": "john3@example.com",
+      "phone": "123-4567",
+      "department": "Engineering",
+      "position": "Software Engineer",
+      "hireDate": "2022-01-15T00:00:00.000Z",
+      "id": "11034"
+    },
+    {
+      "id": "16243",
+      "firstName": "David",
+      "lastName": "Martinez",
+      "email": "david.martinez@example.com",
+      "phone": "222-4321",
+      "department": "Operations",
+      "position": "Operations Coordinator",
+      "hireDate": "2020-11-30T00:00:00.000Z"
+    },
+    {
+      "id": "19756",
+      "firstName": "Sophia",
+      "lastName": "Garcia",
+      "email": "sophia.garcia@example.com",
+      "phone": "111-8765",
+      "department": "Customer Support",
+      "position": "Customer Support Representative",
+      "hireDate": "2018-09-18T00:00:00.000Z"
+    },
+    {
+      "id": "54992",
+      "firstName": "Simran",
+      "lastName": "Meena",
+      "email": "simranmeena2004@gmail.com",
+      "phone": "555-123-4567",
+      "department": "Engineering",
+      "position": "SDE",
+      "hireDate": "2025-05-04T06:44:29.718Z"
+    }
+  ]
+}

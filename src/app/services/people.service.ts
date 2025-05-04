@@ -1,89 +1,74 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of, BehaviorSubject } from 'rxjs';
-import { map, tap, catchError } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 import { Person } from '../models/person.model';
+import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root' // Makes the service available app-wide without needing to register it in a module
 })
 export class PeopleService {
-  // In a real app, this would be an API endpoint
-  private apiUrl = 'api/people';
-  
-  // For demo purposes, we'll use in-memory data
-  private peopleSubject = new BehaviorSubject<Person[]>([
-    { id: 1, firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com', phone: '555-1234', department: 'Engineering', position: 'Software Developer', hireDate: new Date('2020-01-15') },
-    { id: 2, firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@example.com', phone: '555-5678', department: 'Marketing', position: 'Marketing Manager', hireDate: new Date('2019-06-10') },
-    { id: 3, firstName: 'Michael', lastName: 'Johnson', email: 'michael.j@example.com', phone: '555-9012', department: 'HR', position: 'HR Specialist', hireDate: new Date('2021-03-22') },
-    { id: 4, firstName: 'Emily', lastName: 'Williams', email: 'emily.w@example.com', phone: '555-3456', department: 'Finance', position: 'Financial Analyst', hireDate: new Date('2018-11-05') },
-    { id: 5, firstName: 'David', lastName: 'Brown', email: 'david.b@example.com', phone: '555-7890', department: 'Engineering', position: 'QA Engineer', hireDate: new Date('2020-09-18') }
-  ]);
-  
-  people$ = this.peopleSubject.asObservable();
+  private apiUrl = `${environment.apiUrl}/people`; // Base API endpoint for people-related operations
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
+  // Fetch list of all people
   getPeople(): Observable<Person[]> {
-    return this.people$;
+    return this.http.get<Person[]>(this.apiUrl).pipe(
+      catchError(this.handleError)
+    );
   }
 
+  // Fetch a single person by ID
   getPerson(id: number): Observable<Person> {
-    return this.people$.pipe(
-      map(people => people.find(person => person.id === id)),
-      map(person => person ? {...person} : null)
+    return this.http.get<Person>(`${this.apiUrl}/${id}`).pipe(
+      catchError(this.handleError)
     );
   }
 
+  // Add a new person
   addPerson(person: Person): Observable<Person> {
-    const people = this.peopleSubject.getValue();
-    const newId = Math.max(...people.map(p => p.id), 0) + 1;
-    const newPerson = { ...person, id: newId };
-    
-    this.peopleSubject.next([...people, newPerson]);
-    return of(newPerson);
-  }
-
-  updatePerson(person: Person): Observable<Person> {
-    const people = this.peopleSubject.getValue();
-    const index = people.findIndex(p => p.id === person.id);
-    
-    if (index !== -1) {
-      const updatedPeople = [...people];
-      updatedPeople[index] = { ...person };
-      this.peopleSubject.next(updatedPeople);
-      return of(updatedPeople[index]);
-    }
-    
-    return of(null);
-  }
-
-  deletePerson(id: number): Observable<boolean> {
-    const people = this.peopleSubject.getValue();
-    const filteredPeople = people.filter(person => person.id !== id);
-    
-    if (filteredPeople.length !== people.length) {
-      this.peopleSubject.next(filteredPeople);
-      return of(true);
-    }
-    
-    return of(false);
-  }
-
-  searchPeople(term: string): Observable<Person[]> {
-    if (!term.trim()) {
-      return this.getPeople();
-    }
-    
-    term = term.toLowerCase();
-    return this.people$.pipe(
-      map(people => people.filter(person => 
-        person.firstName.toLowerCase().includes(term) || 
-        person.lastName.toLowerCase().includes(term) || 
-        person.email.toLowerCase().includes(term) ||
-        person.department.toLowerCase().includes(term) ||
-        person.position.toLowerCase().includes(term)
-      ))
+    return this.http.post<Person>(this.apiUrl, person).pipe(
+      catchError(this.handleError)
     );
+  }
+
+  // Update an existing person's details
+  updatePerson(person: Person): Observable<Person> {
+    return this.http.put<Person>(`${this.apiUrl}/${person.id}`, person).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  // Delete a person by ID
+  deletePerson(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  // Search for people by a search term (e.g., name or email)
+  searchPeople(term: string): Observable<Person[]> {
+    return this.http.get<Person[]>(`${this.apiUrl}?q=${term}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  // Handle HTTP errors from all requests
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'An unknown error occurred!';
+
+    // Client-side or network error
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Client Error: ${error.error.message}`;
+    } 
+    // Backend returned an unsuccessful response code
+    else {
+      errorMessage = `Server Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+
+    console.error(errorMessage); // Log error for debugging
+    return throwError(errorMessage); // Pass error to component
   }
 }

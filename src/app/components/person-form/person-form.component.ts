@@ -15,6 +15,9 @@ export class PersonFormComponent implements OnInit {
   isEditMode = false;
   personId: number;
   pageTitle = 'Add New Person';
+  isLoading = false;
+  isSubmitting = false;
+  error: string = null;
   
   departments = [
     'Engineering',
@@ -62,33 +65,54 @@ export class PersonFormComponent implements OnInit {
   }
 
   loadPersonData() {
-    this.peopleService.getPerson(this.personId).subscribe(person => {
-      if (person) {
-        this.personForm.patchValue({
-          firstName: person.firstName,
-          lastName: person.lastName,
-          email: person.email,
-          phone: person.phone,
-          department: person.department,
-          position: person.position,
-          hireDate: new Date(person.hireDate)
-        });
-      } else {
-        this.snackBar.open('Person not found', 'Close', {
-          duration: 3000,
+    this.isLoading = true;
+    this.error = null;
+    
+    this.peopleService.getPerson(this.personId).subscribe(
+      person => {
+        if (person) {
+          this.personForm.patchValue({
+            firstName: person.firstName,
+            lastName: person.lastName,
+            email: person.email,
+            phone: person.phone,
+            department: person.department,
+            position: person.position,
+            hireDate: new Date(person.hireDate)
+          });
+        } else {
+          this.snackBar.open('Person not found', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'end',
+            verticalPosition: 'top'
+          });
+          this.router.navigate(['/people']);
+        }
+        this.isLoading = false;
+      },
+      error => {
+        this.error = 'Failed to load person data. Please try again later.';
+        this.isLoading = false;
+        this.snackBar.open('Error loading data: ' + error, 'Close', {
+          duration: 5000,
           horizontalPosition: 'end',
           verticalPosition: 'top'
         });
-        this.router.navigate(['/people']);
       }
-    });
+    );
+  }
+
+  generateTempId(): string {
+    return Math.floor(10000 + Math.random() * 90000).toString();
   }
 
   onSubmit() {
     if (this.personForm.valid) {
+      this.isSubmitting = true;
+      
       const personData: Person = {
         ...this.personForm.value,
-        id: this.isEditMode ? this.personId : null
+        id: this.isEditMode ? this.personId : this.generateTempId()
       };
 
       if (this.isEditMode) {
@@ -99,14 +123,16 @@ export class PersonFormComponent implements OnInit {
               horizontalPosition: 'end',
               verticalPosition: 'top'
             });
+            this.isSubmitting = false;
             this.router.navigate(['/people', updatedPerson.id]);
           },
           error => {
-            this.snackBar.open('Error updating person', 'Close', {
-              duration: 3000,
+            this.snackBar.open('Error updating person: ' + error, 'Close', {
+              duration: 5000,
               horizontalPosition: 'end',
               verticalPosition: 'top'
             });
+            this.isSubmitting = false;
           }
         );
       } else {
@@ -117,14 +143,16 @@ export class PersonFormComponent implements OnInit {
               horizontalPosition: 'end',
               verticalPosition: 'top'
             });
+            this.isSubmitting = false;
             this.router.navigate(['/people', newPerson.id]);
           },
           error => {
-            this.snackBar.open('Error adding person', 'Close', {
-              duration: 3000,
+            this.snackBar.open('Error adding person: ' + error, 'Close', {
+              duration: 5000,
               horizontalPosition: 'end',
               verticalPosition: 'top'
             });
+            this.isSubmitting = false;
           }
         );
       }

@@ -8,7 +8,18 @@
   
   <mat-card>
     <mat-card-content>
-      <form [formGroup]="personForm" (ngSubmit)="onSubmit()" class="person-form">
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>Loading person data...</p>
+      </div>
+      
+      <div *ngIf="error" class="error-container">
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="loadPersonData()">Retry</button>
+      </div>
+      
+      <form *ngIf="!isLoading && !error" [formGroup]="personForm" (ngSubmit)="onSubmit()" class="person-form">
         <div class="form-row">
           <mat-form-field appearance="outline">
             <mat-label>First Name</mat-label>
@@ -68,9 +79,10 @@
         </div>
         
         <div class="form-actions">
-          <button mat-button type="button" routerLink="/people">Cancel</button>
-          <button mat-raised-button color="primary" type="submit" [disabled]="personForm.invalid">
-            {{ isEditMode ? 'Update' : 'Save' }}
+          <button mat-button type="button" routerLink="/people" [disabled]="isSubmitting">Cancel</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="personForm.invalid || isSubmitting">
+            <mat-spinner *ngIf="isSubmitting" diameter="20" class="spinner-button"></mat-spinner>
+            <span *ngIf="!isSubmitting">{{ isEditMode ? 'Update' : 'Save' }}</span>
           </button>
         </div>
       </form>

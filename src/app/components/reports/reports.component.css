@@ -1,0 +1,12 @@
+mat-card {
+    margin: 50px;
+  }
+  
+  mat-card-title {
+    font-weight: bold;
+  }
+  
+  mat-card-content {
+    padding: 10px;
+  }
+  

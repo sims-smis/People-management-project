@@ -9,15 +9,22 @@
   }
   
   .dashboard-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    display: flex;
     gap: 24px;
     margin-bottom: 24px;
   }
   
   .dashboard-card {
-    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ensures content and actions are spaced */
   }
+  
+  mat-card-content {
+    flex-grow: 1;
+  }
+  
   
   .stat-value {
     font-size: 48px;
@@ -32,6 +39,7 @@
   }
   
   .recent-people-card {
+    margin-top: 64px;
     margin-bottom: 24px;
   }
   

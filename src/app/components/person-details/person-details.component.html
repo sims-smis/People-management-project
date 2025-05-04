@@ -13,7 +13,13 @@
     <p>Loading person details...</p>
   </div>
   
-  <div *ngIf="!isLoading && person">
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error</mat-icon>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadPersonDetails(person.id)">Retry</button>
+  </div>
+  
+  <div *ngIf="!isLoading && !error && person">
     <mat-card>
       <mat-card-header>
         <div mat-card-avatar class="person-avatar">

@@ -4,7 +4,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
-import { AppRoutingModule } from './app-routing.module';
 
 // Angular Material Modules
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -25,6 +24,8 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 // Components
 import { AppComponent } from './app.component';
@@ -32,19 +33,26 @@ import { PeopleListComponent } from './components/people-list/people-list.compon
 import { PersonFormComponent } from './components/person-form/person-form.component';
 import { PersonDetailsComponent } from './components/person-details/person-details.component';
 import { DeleteConfirmationComponent } from './components/delete-confirmation/delete-confirmation.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HeaderComponent } from './components/header/header.component';
 import { SidenavComponent } from './components/sidenav/sidenav.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+// Interceptors for handling API requests
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpErrorInterceptor } from './interceptors/http-error.interceptor';
+import { SettingsComponent } from './components/settings/settings.component';
+import { ReportsComponent } from './components/reports/reports.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: 'dashboard', component: DashboardComponent },
+  { path: '', redirectTo: '/people', pathMatch: 'full' },
   { path: 'people', component: PeopleListComponent },
   { path: 'people/new', component: PersonFormComponent },
   { path: 'people/:id', component: PersonDetailsComponent },
   { path: 'people/:id/edit', component: PersonFormComponent },
-  { path: '**', redirectTo: '/dashboard' }
+  { path: 'settings', component: SettingsComponent },
+  { path: 'reports', component: ReportsComponent },
+  { path: 'dashboard', component: DashboardComponent },
+  { path: '**', redirectTo: '/people' }
 ];
 
 @NgModule({
@@ -54,18 +62,19 @@ const routes: Routes = [
     PersonFormComponent,
     PersonDetailsComponent,
     DeleteConfirmationComponent,
-    DashboardComponent,
     HeaderComponent,
-    SidenavComponent
+    SidenavComponent,
+    SettingsComponent,
+    ReportsComponent,
+    DashboardComponent
   ],
   imports: [
     BrowserModule,
-    MatProgressSpinnerModule,
-    AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
+    MatSlideToggleModule,
     RouterModule.forRoot(routes),
     MatToolbarModule,
     MatSidenavModule,
@@ -84,12 +93,19 @@ const routes: Routes = [
     MatSnackBarModule,
     MatDialogModule,
     MatChipsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatProgressSpinnerModule
   ],
   entryComponents: [
     DeleteConfirmationComponent
   ],
-  providers: [],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: HttpErrorInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

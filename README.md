@@ -1,26 +1,77 @@
-# PeopleManagement
+# Angular People Management App
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.3.10.
+This application is built using **Angular 7.3.10** that allows you to manage a list of people. It supports listing, editing, viewing and deleting individuals using predefined REST API endpoints.
 
-## Development server
+## 📹 Demo
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+https://github.com/user-attachments/assets/8271d7fc-0a88-484d-a516-deaecdb42cfe
 
-## Code scaffolding
+## 🧾 Features
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+- List all people
+- Edit a person
+- View a person's detail
+- Delete a person
 
-## Build
+## 🛠️ Technologies Used
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+- Angular 7
+- Angular Material
+- TypeScript
+- HTML/CSS
+- REST API endpoints
 
-## Running unit tests
+## 🔗 REST API Endpoints Used
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+This app fetches and updates people data using the following REST API:
 
-## Running end-to-end tests
+| Method | Endpoint              | Description                            |
+|--------|------------------------|----------------------------------------|
+| GET    | `/people`              | Fetches the list of all people         |
+| GET    | `/people/:id`          | Fetches details of a single person     |
+| POST   | `/people`              | Adds a new person                      |
+| PUT    | `/people/:id`          | Updates an existing person's details   |
+| DELETE | `/people/:id`          | Deletes a person by ID                 |
+| GET    | `/people?q=term`       | Searches for people by a search term   |
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+All API calls are managed through the `PeopleService` using Angular's `HttpClient`. Each request includes error handling using RxJS's `catchError` operator to ensure smooth user experience and easier debugging.
+
+(Data is mocked using `db.json` with `json-server` for development)
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```
+https://github.com/sims-smis/People-management-project.git
+cd people-management
+```
+Run `npm install` to install dependencies.
+
+### 2. Start the Backend (Choose One Option)
+**Option A: Use Mock Server using json-server (Quick Setup)**
+
+```
+npx json-server --watch db.json --port 3000
+ng serve --open
+```
+Your mock server is now running at `http://localhost:3000/`
+
+This will navigate to `http://localhost:4200/people`. The app will automatically reload if you change any of the source files.
+
+**Option B: Use Real Backend (Assignment 2 - Node + MongoDB)**
+
+Clone and set up the backend from your Assignment 2 repository:
+
+```
+git clone https://github.com/sims-smis/people-api.git
+cd people-api
+npm install
+node index.js
+```
+Your Node backend is now running at `http://localhost:3000/`
+
+Open a new terminal and run `ng serve --open`. This will navigate to `http://localhost:4200/people`. The app will automatically reload if you change any of the source files.
 
 ## Further help
 
